@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="theme-color" content="#e11d2e"/>
+<title>Emorce Tools</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono&family=Manrope:wght@400;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Manrope,system-ui,sans-serif;background:#050203;color:#f4f4f5;min-height:100vh}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse 80% 50% at 50% -15%,rgba(225,29,46,.18),transparent 55%);z-index:0}
+.intro{position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;background:radial-gradient(ellipse at center,#1a0508,#050203)}
+.intro h1{font-family:Syne,sans-serif;font-size:3rem;font-weight:800}.intro h1 span{color:#e11d2e}
+.intro p{margin-top:12px;color:rgba(254,202,202,.5);font-size:14px}
+.spinner{margin-top:32px;width:32px;height:32px;border:2px solid rgba(225,29,46,.3);border-top-color:#f87171;border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.hidden{display:none!important}
+.nav-wrap{position:fixed;top:16px;left:0;right:0;z-index:50;display:flex;justify-content:center;padding:0 16px;pointer-events:none}
+.nav{pointer-events:auto;display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:999px;background:rgba(12,4,6,.88);border:1px solid rgba(225,29,46,.28)}
+.brand{display:flex;align-items:center;gap:8px;text-decoration:none;color:#fff;font-weight:700;font-size:14px;padding:4px 12px 4px 4px}
+.brand .red{color:#e11d2e}
+.links a{color:rgba(255,255,255,.55);text-decoration:none;font-size:12px;font-weight:500;padding:6px 12px;border-radius:999px}
+.links a:hover,.links a.active{color:#fca5a5;background:rgba(225,29,46,.15)}
+main{position:relative;z-index:1;padding:96px 16px 64px;max-width:1100px;margin:0 auto}
+.glass{background:rgba(18,8,10,.78);border:1px solid rgba(225,29,46,.18);border-radius:16px;padding:20px}
+h1.page{font-family:Syne,sans-serif;font-size:2.2rem;font-weight:800;margin-bottom:8px}
+h1.page span{color:#e11d2e}
+.sub{color:rgba(255,255,255,.45);font-size:14px;margin-bottom:16px}
+.grid{display:grid;gap:16px}.card{display:flex;gap:12px}
+.icon{width:36px;height:36px;border-radius:10px;background:rgba(225,29,46,.15);border:1px solid rgba(225,29,46,.3);display:flex;align-items:center;justify-content:center}
+.layout{display:flex;flex-direction:column;gap:20px}
+@media(min-width:900px){.layout{flex-direction:row}}
+.sidebar{width:100%}@media(min-width:900px){.sidebar{width:220px;flex-shrink:0}}
+.tool-btn{width:100%;display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:12px;border:1px solid transparent;background:transparent;color:#fff;cursor:pointer;text-align:left;font-size:13px;font-weight:500}
+.tool-btn:hover{background:rgba(225,29,46,.08)}.tool-btn.active{background:rgba(225,29,46,.14);border-color:rgba(225,29,46,.35)}
+.emoji{width:28px;height:28px;border-radius:8px;background:rgba(225,29,46,.1);border:1px solid rgba(225,29,46,.2);display:flex;align-items:center;justify-content:center;font-size:12px}
+.badge{font-size:9px;font-weight:700;padding:2px 4px;border-radius:4px;background:rgba(245,158,11,.2);color:#fcd34d}
+.panel{flex:1}
+.drop{border:1.5px dashed rgba(225,29,46,.28);border-radius:12px;height:160px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer}
+textarea{width:100%;min-height:160px;background:rgba(0,0,0,.45);border:1px solid rgba(225,29,46,.15);border-radius:12px;padding:14px;color:#fecaca;font-family:DM Mono,monospace;font-size:13px}
+.btn{width:100%;padding:14px;border-radius:12px;border:1px solid rgba(255,80,90,.45);background:linear-gradient(180deg,#e11d2e,#9f1239);color:#fff;font-weight:600;cursor:pointer;margin-top:16px}
+.btn:disabled{opacity:.4}
+.two{display:grid;gap:16px}@media(min-width:700px){.two{grid-template-columns:1fr 1fr}}
+label.small{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:rgba(248,113,113,.5);margin-bottom:8px;display:block}
+pre.result{background:rgba(0,0,0,.45);border:1px solid rgba(225,29,46,.15);border-radius:12px;padding:14px;color:#fecaca;font-family:DM Mono,monospace;font-size:12px;white-space:pre-wrap;max-height:360px;overflow:auto}
+.center{text-align:center}a.cta{color:#fca5a5;font-weight:600;text-decoration:none}
+.err{color:#f87171;font-size:13px}
+</style>
+</head>
+<body>
+<div id="intro" class="intro">
+  <div style="width:80px;height:80px;border-radius:16px;background:linear-gradient(135deg,#e11d2e,#7f1d1d);margin-bottom:20px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:28px;box-shadow:0 0 40px rgba(225,29,46,.45)">E</div>
+  <h1>Emorce<span> Tools</span></h1>
+  <p>Click anywhere to enter</p>
+  <div class="spinner"></div>
+</div>
+<header class="nav-wrap hidden" id="nav">
+  <nav class="nav">
+    <a class="brand" href="#home"><span style="width:28px;height:28px;border-radius:8px;background:#e11d2e;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:800">E</span><span>Emorce<span class="red"> Tools</span></span></a>
+    <div class="links">
+      <a href="#home" data-page="home" class="active">Home</a>
+      <a href="#api" data-page="api">API</a>
+      <a href="#tool" data-page="tool">Tools</a>
+      <a href="#updates" data-page="updates">Updates</a>
+    </div>
+  </nav>
+</header>
+<main id="app" class="hidden"></main>
+<script>
+const TOOLS=[
+{id:'detector',name:'Detector',emoji:'⚡',endpoint:'/detect',label:'EXECUTE DETECTOR',desc:'Detect the obfuscator used on a Lua script.'},
+{id:'moonsec',name:'MoonSec V3',emoji:'🌙',endpoint:'/moonsec',label:'EXECUTE MOONSEC V3',desc:'Deobfuscate MoonSec V3.'},
+{id:'prometheus',name:'Prometheus',emoji:'🔮',endpoint:'/prometheus',label:'EXECUTE PROMETHEUS',desc:'Deobfuscate Prometheus.'},
+{id:'ironbrew2',name:'Ironbrew2',emoji:'☕',endpoint:'/ironbrew2',label:'EXECUTE IRONBREW2',desc:'Deobfuscate Ironbrew2.'},
+{id:'ironveil',name:'Ironveil',emoji:'🔴',endpoint:'/ironveil',label:'EXECUTE IRONVEIL',desc:'Deobfuscate Ironveil.'},
+{id:'hercules',name:'Hercules',emoji:'💪',endpoint:'/hercules',label:'EXECUTE HERCULES',desc:'Deobfuscate Hercules.'},
+{id:'goofyscator',name:'Goofyscator',emoji:'R3E',endpoint:'/goofyscator',badge:'BETA',label:'EXECUTE GOOFYSCATOR',desc:'Deobfuscate Goofyscator V10 (Beta).'},
+{id:'clyde',name:'Clyde Protection',emoji:'🛡️',endpoint:'/clydedeobf',label:'EXECUTE CLYDE',desc:'Deobfuscate Clyde Protection.'},
+{id:'77fuscator',name:'77fuscator',emoji:'67',endpoint:'/77fuscator',label:'EXECUTE 77FUSCATOR',desc:'Deobfuscate 77fuscator.'},
+{id:'luaobfuscator',name:'LuaObfuscator',emoji:'🔗',endpoint:'/luaobfuscator',label:'EXECUTE LUAOBFUSCATOR',desc:'Deobfuscate LuaObfuscator.com.'},
+{id:'obfuscator',name:'Obfuscator',emoji:'🤖',endpoint:'/obfuscate',label:'EXECUTE OBFUSCATOR',desc:'Obfuscate Lua.'},
+{id:'beautifier',name:'Beautifier',emoji:'✨',endpoint:'/beautify',label:'EXECUTE BEAUTIFIER',desc:'Beautify Lua code.'}
+];
+let activeId=TOOLS[0].id, script='';
+const intro=document.getElementById('intro'),nav=document.getElementById('nav'),app=document.getElementById('app');
+function enter(){sessionStorage.setItem('e1','1');intro.classList.add('hidden');nav.classList.remove('hidden');app.classList.remove('hidden');route()}
+intro.onclick=enter;if(sessionStorage.getItem('e1'))enter();
+function route(){const h=(location.hash||'#home').slice(1);document.querySelectorAll('.links a').forEach(a=>a.classList.toggle('active',a.dataset.page===h));
+if(h==='tool')renderTools();else if(h==='api')renderApi();else if(h==='updates')renderUpdates();else renderHome()}
+window.onhashchange=route;
+
+function renderHome(){app.innerHTML=`<div class="center" style="max-width:640px;margin:0 auto">
+<div style="width:64px;height:64px;border-radius:16px;background:linear-gradient(135deg,#e11d2e,#7f1d1d);margin:0 auto 20px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:24px">E</div>
+<h1 class="page">Emorce<span> Tools</span></h1>
+<p class="sub">Live deobfuscation. Paste Lua, hit execute — real backend.</p>
+<div class="grid">
+<div class="glass card"><div class="icon">⚡</div><div><strong>Live API</strong><p class="sub" style="margin:8px 0 0">Proxied to leakd.up.railway.app</p></div></div>
+<div class="glass card"><div class="icon">✨</div><div><strong>Open Tools</strong><p class="sub" style="margin:8px 0 0"><a class="cta" href="#tool">Go →</a></p></div></div>
+</div></div>`}
+
+function renderTools(){
+const t=TOOLS.find(x=>x.id===activeId)||TOOLS[0];
+app.innerHTML=`<div class="layout"><aside class="sidebar"><div class="glass" style="position:sticky;top:88px">
+${TOOLS.map(x=>`<button class="tool-btn ${x.id===activeId?'active':''}" data-id="${x.id}"><span class="emoji">${x.emoji}</span><span style="flex:1">${x.name}</span>${x.badge?`<span class="badge">${x.badge}</span>`:''}</button>`).join('')}
+</div></aside><div class="panel">
+<div class="glass card"><div class="emoji" style="width:48px;height:48px;font-size:20px">${t.emoji}</div>
+<div><h2 style="font-family:Syne,sans-serif;font-size:1.4rem">${t.name}</h2><p class="sub">${t.desc}</p></div></div>
+<div class="glass"><div class="two">
+<div><label class="small">Upload</label><div class="drop" id="drop"><div>⬆</div><div id="fname">Drop .lua</div>
+<input type="file" id="file" accept=".lua,.luau,.txt" hidden/></div></div>
+<div><label class="small">Paste</label><textarea id="code" placeholder="-- Lua here">${esc(script)}</textarea></div>
+</div><button class="btn" id="run">${t.label}</button><div id="out" style="margin-top:12px"></div></div>
+</div></div>`;
+document.querySelectorAll('.tool-btn').forEach(b=>b.onclick=()=>{activeId=b.dataset.id;renderTools()});
+const drop=document.getElementById('drop'),file=document.getElementById('file');
+drop.onclick=()=>file.click();
+file.onchange=()=>{if(!file.files[0])return;const r=new FileReader();r.onload=()=>{script=r.result;document.getElementById('code').value=script;document.getElementById('fname').textContent=file.files[0].name};r.readAsText(file.files[0])};
+document.getElementById('code').oninput=e=>{script=e.target.value};
+document.getElementById('run').onclick=()=>runTool(t);
+}
+
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+
+async function runTool(t){
+if(!script.trim()){document.getElementById('out').innerHTML='<p class="err">Paste or upload a script first.</p>';return}
+const btn=document.getElementById('run'),out=document.getElementById('out');
+btn.disabled=true;btn.textContent='Running…';out.innerHTML='<p class="sub">Calling backend…</p>';
+try{
+const fd=new FormData();
+fd.append('file',new Blob([script],{type:'text/plain'}),'script.lua');
+const res=await fetch('/api/proxy?path='+encodeURIComponent(t.endpoint),{method:'POST',body:fd});
+const text=await res.text();
+let data;try{data=JSON.parse(text)}catch{data={raw:text}}
+let result;
+if(typeof data.code==='string')result=data.code;
+else if(typeof data.result==='string')result=data.result;
+else if(typeof data.output==='string')result=data.output;
+else if(data.error)result='Error: '+data.error;
+else result=JSON.stringify(data,null,2);
+out.innerHTML='<pre class="result">'+esc(result)+'</pre>';
+}catch(e){
+out.innerHTML='<p class="err">Request failed: '+esc(e.message)+'</p>';
+}
+btn.disabled=false;btn.textContent=t.label;
+}
+
+function renderApi(){
+app.innerHTML='<h1 class="page">API</h1><p class="sub">All calls go through /api/proxy → leakd.up.railway.app</p>'+
+TOOLS.map(t=>`<div class="glass" style="margin-bottom:12px"><code style="color:#fca5a5">POST ${t.endpoint}</code> — ${t.name}</div>`).join('');
+}
+function renderUpdates(){
+app.innerHTML='<h1 class="page">Updates</h1><div class="glass"><strong>Live backend</strong><p class="sub">Execute hits real LeakD engines via proxy.</p></div>';
+}
+</script>
+</body>
+</html>
