@@ -45,7 +45,8 @@ textarea{width:100%;min-height:160px;background:rgba(0,0,0,.45);border:1px solid
 label.small{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:rgba(248,113,113,.5);margin-bottom:8px;display:block}
 pre.result{background:rgba(0,0,0,.45);border:1px solid rgba(225,29,46,.15);border-radius:12px;padding:14px;color:#fecaca;font-family:DM Mono,monospace;font-size:12px;white-space:pre-wrap;max-height:360px;overflow:auto}
 .center{text-align:center}a.cta{color:#fca5a5;font-weight:600;text-decoration:none}
-.err{color:#f87171;font-size:13px}
+.err{color:#f87171;font-size:13px;margin-bottom:8px}
+.hint{color:rgba(252,165,165,.55);font-size:12px;margin-top:8px;line-height:1.5}
 </style>
 </head>
 <body>
@@ -69,18 +70,18 @@ pre.result{background:rgba(0,0,0,.45);border:1px solid rgba(225,29,46,.15);borde
 <main id="app" class="hidden"></main>
 <script>
 const TOOLS=[
-{id:'detector',name:'Detector',emoji:'⚡',endpoint:'/detect',label:'EXECUTE DETECTOR',desc:'Detect the obfuscator used on a Lua script.'},
-{id:'moonsec',name:'MoonSec V3',emoji:'🌙',endpoint:'/moonsec',label:'EXECUTE MOONSEC V3',desc:'Deobfuscate MoonSec V3.'},
-{id:'prometheus',name:'Prometheus',emoji:'🔮',endpoint:'/prometheus',label:'EXECUTE PROMETHEUS',desc:'Deobfuscate Prometheus.'},
-{id:'ironbrew2',name:'Ironbrew2',emoji:'☕',endpoint:'/ironbrew2',label:'EXECUTE IRONBREW2',desc:'Deobfuscate Ironbrew2.'},
-{id:'ironveil',name:'Ironveil',emoji:'🔴',endpoint:'/ironveil',label:'EXECUTE IRONVEIL',desc:'Deobfuscate Ironveil.'},
-{id:'hercules',name:'Hercules',emoji:'💪',endpoint:'/hercules',label:'EXECUTE HERCULES',desc:'Deobfuscate Hercules.'},
+{id:'detector',name:'Detector',emoji:'⚡',endpoint:'/detect',label:'EXECUTE DETECTOR',desc:'Detect which obfuscator was used. Always start here.'},
+{id:'moonsec',name:'MoonSec V3',emoji:'🌙',endpoint:'/moonsec',label:'EXECUTE MOONSEC V3',desc:'Deobfuscate MoonSec V3 only. Needs a real MoonSec dump.'},
+{id:'prometheus',name:'Prometheus',emoji:'🔮',endpoint:'/prometheus',label:'EXECUTE PROMETHEUS',desc:'Deobfuscate Prometheus only.'},
+{id:'ironbrew2',name:'Ironbrew2',emoji:'☕',endpoint:'/ironbrew2',label:'EXECUTE IRONBREW2',desc:'Deobfuscate Ironbrew2 only.'},
+{id:'ironveil',name:'Ironveil',emoji:'🔴',endpoint:'/ironveil',label:'EXECUTE IRONVEIL',desc:'Deobfuscate Ironveil only.'},
+{id:'hercules',name:'Hercules',emoji:'💪',endpoint:'/hercules',label:'EXECUTE HERCULES',desc:'Deobfuscate Hercules only.'},
 {id:'goofyscator',name:'Goofyscator',emoji:'R3E',endpoint:'/goofyscator',badge:'BETA',label:'EXECUTE GOOFYSCATOR',desc:'Deobfuscate Goofyscator V10 (Beta).'},
-{id:'clyde',name:'Clyde Protection',emoji:'🛡️',endpoint:'/clydedeobf',label:'EXECUTE CLYDE',desc:'Deobfuscate Clyde Protection.'},
-{id:'77fuscator',name:'77fuscator',emoji:'67',endpoint:'/77fuscator',label:'EXECUTE 77FUSCATOR',desc:'Deobfuscate 77fuscator.'},
-{id:'luaobfuscator',name:'LuaObfuscator',emoji:'🔗',endpoint:'/luaobfuscator',label:'EXECUTE LUAOBFUSCATOR',desc:'Deobfuscate LuaObfuscator.com.'},
-{id:'obfuscator',name:'Obfuscator',emoji:'🤖',endpoint:'/obfuscate',label:'EXECUTE OBFUSCATOR',desc:'Obfuscate Lua.'},
-{id:'beautifier',name:'Beautifier',emoji:'✨',endpoint:'/beautify',label:'EXECUTE BEAUTIFIER',desc:'Beautify Lua code.'}
+{id:'clyde',name:'Clyde Protection',emoji:'🛡️',endpoint:'/clydedeobf',label:'EXECUTE CLYDE',desc:'Deobfuscate Clyde Protection only.'},
+{id:'77fuscator',name:'77fuscator',emoji:'67',endpoint:'/77fuscator',label:'EXECUTE 77FUSCATOR',desc:'Deobfuscate 77fuscator only.'},
+{id:'luaobfuscator',name:'LuaObfuscator',emoji:'🔗',endpoint:'/luaobfuscator',label:'EXECUTE LUAOBFUSCATOR',desc:'Deobfuscate LuaObfuscator.com only.'},
+{id:'obfuscator',name:'Obfuscator',emoji:'🤖',endpoint:'/obfuscate',label:'EXECUTE OBFUSCATOR',desc:'Obfuscate plain Lua (works on any script).'},
+{id:'beautifier',name:'Beautifier',emoji:'✨',endpoint:'/beautify',label:'EXECUTE BEAUTIFIER',desc:'Beautify Lua. Works on any script.'}
 ];
 let activeId=TOOLS[0].id, script='';
 const intro=document.getElementById('intro'),nav=document.getElementById('nav'),app=document.getElementById('app');
@@ -93,9 +94,9 @@ window.onhashchange=route;
 function renderHome(){app.innerHTML=`<div class="center" style="max-width:640px;margin:0 auto">
 <div style="width:64px;height:64px;border-radius:16px;background:linear-gradient(135deg,#e11d2e,#7f1d1d);margin:0 auto 20px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:24px">E</div>
 <h1 class="page">Emorce<span> Tools</span></h1>
-<p class="sub">Live deobfuscation. Paste Lua, hit execute — real backend.</p>
+<p class="sub">Live engines via LeakD backend. Detector + Beautifier work on any script. Named deobfuscators need matching dumps.</p>
 <div class="grid">
-<div class="glass card"><div class="icon">⚡</div><div><strong>Live API</strong><p class="sub" style="margin:8px 0 0">Proxied to leakd.up.railway.app</p></div></div>
+<div class="glass card"><div class="icon">⚡</div><div><strong>Start with Detector</strong><p class="sub" style="margin:8px 0 0">See which obfuscator it is before picking a tool.</p></div></div>
 <div class="glass card"><div class="icon">✨</div><div><strong>Open Tools</strong><p class="sub" style="margin:8px 0 0"><a class="cta" href="#tool">Go →</a></p></div></div>
 </div></div>`}
 
@@ -109,8 +110,10 @@ ${TOOLS.map(x=>`<button class="tool-btn ${x.id===activeId?'active':''}" data-id=
 <div class="glass"><div class="two">
 <div><label class="small">Upload</label><div class="drop" id="drop"><div>⬆</div><div id="fname">Drop .lua</div>
 <input type="file" id="file" accept=".lua,.luau,.txt" hidden/></div></div>
-<div><label class="small">Paste</label><textarea id="code" placeholder="-- Lua here">${esc(script)}</textarea></div>
-</div><button class="btn" id="run">${t.label}</button><div id="out" style="margin-top:12px"></div></div>
+<div><label class="small">Paste</label><textarea id="code" placeholder="-- Paste obfuscated or plain Lua">${esc(script)}</textarea></div>
+</div><button class="btn" id="run">${t.label}</button>
+<p class="hint">Named deobfuscators only work on matching dumps. Plain Lua → use Detector, Beautifier, or Obfuscator.</p>
+<div id="out" style="margin-top:12px"></div></div>
 </div></div>`;
 document.querySelectorAll('.tool-btn').forEach(b=>b.onclick=()=>{activeId=b.dataset.id;renderTools()});
 const drop=document.getElementById('drop'),file=document.getElementById('file');
@@ -132,13 +135,21 @@ fd.append('file',new Blob([script],{type:'text/plain'}),'script.lua');
 const res=await fetch('/api/proxy?path='+encodeURIComponent(t.endpoint),{method:'POST',body:fd});
 const text=await res.text();
 let data;try{data=JSON.parse(text)}catch{data={raw:text}}
-let result;
+let result='', isErr=false;
 if(typeof data.code==='string')result=data.code;
+else if(typeof data.obfuscated_code==='string')result=data.obfuscated_code;
 else if(typeof data.result==='string')result=data.result;
 else if(typeof data.output==='string')result=data.output;
-else if(data.error)result='Error: '+data.error;
+else if(data.error){
+  isErr=true;
+  result=String(data.error);
+  if(/retarded|not the right obfuscator/i.test(result))
+    result='Wrong obfuscator (or this is not a matching dump).\n\nLeakD: '+result+'\n\n→ Run Detector first\n→ Or use Beautifier / Obfuscator on plain Lua';
+}
+else if(data.top_result||data.detections)result=JSON.stringify(data,null,2);
+else if(data.raw)result=data.raw;
 else result=JSON.stringify(data,null,2);
-out.innerHTML='<pre class="result">'+esc(result)+'</pre>';
+out.innerHTML=(isErr?'<p class="err">Engine rejected this input</p>':'')+'<pre class="result">'+esc(result)+'</pre>';
 }catch(e){
 out.innerHTML='<p class="err">Request failed: '+esc(e.message)+'</p>';
 }
@@ -146,11 +157,11 @@ btn.disabled=false;btn.textContent=t.label;
 }
 
 function renderApi(){
-app.innerHTML='<h1 class="page">API</h1><p class="sub">All calls go through /api/proxy → leakd.up.railway.app</p>'+
+app.innerHTML='<h1 class="page">API</h1><p class="sub">Proxy → leakd.up.railway.app. Same engines LeakD uses.</p>'+
 TOOLS.map(t=>`<div class="glass" style="margin-bottom:12px"><code style="color:#fca5a5">POST ${t.endpoint}</code> — ${t.name}</div>`).join('');
 }
 function renderUpdates(){
-app.innerHTML='<h1 class="page">Updates</h1><div class="glass"><strong>Live backend</strong><p class="sub">Execute hits real LeakD engines via proxy.</p></div>';
+app.innerHTML='<h1 class="page">Updates</h1><div class="glass"><strong>Live backend</strong><p class="sub">Deobfuscators reject non-matching scripts (LeakD message). Detector / Beautifier / Obfuscator work on any input.</p></div>';
 }
 </script>
 </body>
