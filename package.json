@@ -2,6 +2,6 @@
   "name": "emorce-lua-tools",
   "version": "4.0.0",
   "private": true,
-  "description": "Emorce HEXED v4 + LeakD proxy",
+  "description": "Emorce HEXED v4",
   "dependencies": {}
 }
