@@ -1,35 +1,35 @@
-module.exports = async function handler(req, res) {
+/**
+ * Proxy to LeakD-style backends. Path query: ?path=/detect|/moonsec|...
+ */
+module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  if (req.method === 'OPTIONS') { res.statusCode = 204; res.end(); return; }
+  if (req.method !== 'POST') { res.statusCode = 405; res.end(JSON.stringify({ error: 'POST only' })); return; }
 
-  if (req.method === 'OPTIONS') {
-    return res.status(204).end();
-  }
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'POST only' });
-  }
+  const u = new URL(req.url, 'http://localhost');
+  const path = u.searchParams.get('path') || '/detect';
+  const upstream = 'https://leakd-api.vercel.app' + (path.startsWith('/') ? path : '/' + path);
 
-  const path = (req.query && req.query.path) || '/detect';
-  const target = 'https://leakd.up.railway.app' + (String(path).startsWith('/') ? path : '/' + path);
+  const chunks = [];
+  for await (const c of req) chunks.push(c);
+  const body = Buffer.concat(chunks);
 
   try {
-    const chunks = [];
-    for await (const chunk of req) chunks.push(chunk);
-    const body = Buffer.concat(chunks);
-    const ct = req.headers['content-type'] || 'application/octet-stream';
-
-    const upstream = await fetch(target, {
+    const r = await fetch(upstream, {
       method: 'POST',
-      headers: { 'content-type': ct },
+      headers: {
+        'content-type': req.headers['content-type'] || 'application/octet-stream',
+      },
       body,
     });
-
-    const text = await upstream.text();
-    res.status(upstream.status);
-    res.setHeader('Content-Type', upstream.headers.get('content-type') || 'application/json');
-    return res.send(text);
+    const text = await r.text();
+    res.statusCode = r.status;
+    res.setHeader('Content-Type', r.headers.get('content-type') || 'application/json');
+    res.end(text);
   } catch (e) {
-    return res.status(502).json({ success: false, error: String(e) });
+    res.statusCode = 502;
+    res.end(JSON.stringify({ error: 'proxy failed: ' + (e.message || e) }));
   }
 };
