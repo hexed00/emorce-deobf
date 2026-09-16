@@ -1,13 +1,22 @@
 {
   "version": 2,
   "builds": [
-    { "src": "api/proxy.js", "use": "@vercel/node" },
-    { "src": "api/hexed.js", "use": "@vercel/node" },
-    { "src": "index.html", "use": "@vercel/static" }
+    { "src": "index.html", "use": "@vercel/static" },
+    { "src": "api/**/*.js", "use": "@vercel/node" }
   ],
   "routes": [
-    { "src": "/api/proxy", "dest": "/api/proxy.js" },
     { "src": "/api/hexed", "dest": "/api/hexed.js" },
+    { "src": "/api/(.*)", "dest": "/api/$1" },
     { "src": "/(.*)", "dest": "/index.html" }
+  ],
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "POST, OPTIONS" },
+        { "key": "Access-Control-Allow-Headers", "value": "Content-Type, X-Pastefy" }
+      ]
+    }
   ]
 }
