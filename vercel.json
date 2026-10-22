@@ -2,11 +2,18 @@
   "version": 2,
   "builds": [
     { "src": "index.html", "use": "@vercel/static" },
+    { "src": "favicon.png", "use": "@vercel/static" },
+    { "src": "emorce.png", "use": "@vercel/static" },
+    { "src": "icons/**", "use": "@vercel/static" },
     { "src": "api/**/*.js", "use": "@vercel/node" }
   ],
   "routes": [
     { "src": "/api/hexed", "dest": "/api/hexed.js" },
+    { "src": "/api/proxy", "dest": "/api/proxy.js" },
     { "src": "/api/(.*)", "dest": "/api/$1" },
+    { "src": "/favicon.png", "dest": "/favicon.png" },
+    { "src": "/emorce.png", "dest": "/emorce.png" },
+    { "src": "/icons/(.*)", "dest": "/icons/$1" },
     { "src": "/(.*)", "dest": "/index.html" }
   ],
   "headers": [
