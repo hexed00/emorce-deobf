@@ -1,18 +1,18 @@
 /**
- * Proxy to LeakD-style backends.
+ * Emorce proxy → LeakD engines with DEMORCE key
  * Query: ?path=/detect|/luraph|/moonsec|/prometheus|/ironveil|...
- * Tries multiple upstreams so the tools stay alive.
  */
 const UPSTREAMS = [
   'https://leakd.up.railway.app',
   'https://leakd-api.vercel.app',
-  'https://leakd.vercel.app',
 ];
+
+const LEAKD_KEY = process.env.LEAKD_API_KEY || 'lkd_3W3nXSBFDx19hZh3NkpCSMLI';
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-Pastefy');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-Pastefy, Authorization');
 
   if (req.method === 'OPTIONS') {
     res.statusCode = 204;
@@ -39,20 +39,21 @@ module.exports = async (req, res) => {
     try {
       const r = await fetch(base + path, {
         method: 'POST',
-        headers: { 'content-type': ct },
+        headers: {
+          'content-type': ct,
+          authorization: 'Bearer ' + LEAKD_KEY,
+          'x-api-key': LEAKD_KEY,
+        },
         body,
       });
       const text = await r.text();
-      if (r.ok || (text && text.length > 2)) {
+      if (r.ok || (text && text.length > 2 && !/unauthorized|invalid.?key|forbidden/i.test(text))) {
         res.statusCode = r.status;
-        res.setHeader(
-          'Content-Type',
-          r.headers.get('content-type') || 'application/json'
-        );
+        res.setHeader('Content-Type', r.headers.get('content-type') || 'application/json');
         res.end(text);
         return;
       }
-      lastErr = `upstream ${base} status ${r.status}`;
+      lastErr = `upstream ${base} status ${r.status}: ${text.slice(0, 120)}`;
     } catch (e) {
       lastErr = e.message || String(e);
     }
