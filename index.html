@@ -2,11 +2,84 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="theme-color" content="#c41e3a"/>
 <title>DEMORCE Tools</title>
-<script>window.ICON_MAP={};</script>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#07050a;--panel:rgba(18,12,20,.92);--border:rgba(196,30,58,.22);--red2:#e11d48;--red-glow:rgba(196,30,58,.35);--text:#f5f0f2;--muted:rgba(245,240,242,.48);--muted2:rgba(245,240,242,.28);--font:Outfit,system-ui,sans-serif;--mono:JetBrains Mono,monospace}
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse 70% 45% at 50% -10%,rgba(196,30,58,.2),transparent 55%)}
+.splash{position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(ellipse at center,#140810,#07050a);cursor:pointer}
+.splash.out{opacity:0;visibility:hidden;pointer-events:none;transition:.4s}
+.splash .ring{width:80px;height:80px;border-radius:20px;background:linear-gradient(145deg,#1a0a10,#0a0608);border:1px solid rgba(196,30,58,.55);box-shadow:0 0 40px var(--red-glow);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:28px;color:#fda4af;margin-bottom:18px}
+.splash h1{font-size:2.4rem;font-weight:800}.splash h1 span{color:var(--red2)}.splash p{color:var(--muted);margin-top:10px;font-size:14px}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:12px 18px;background:rgba(7,5,10,.85);border-bottom:1px solid var(--border);backdrop-filter:blur(12px)}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:#fff;font-weight:700}.brand .mark{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,#e11d48,#9f1239);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;box-shadow:0 0 16px var(--red-glow)}
+.brand em{font-style:normal;color:var(--red2)}.nav-pills button{appearance:none;border:none;background:transparent;color:var(--muted);font-family:inherit;font-size:12px;font-weight:600;padding:7px 14px;border-radius:999px;cursor:pointer}.nav-pills button.on{color:#fecdd3;background:rgba(196,30,58,.18)}
+.main{display:grid;grid-template-columns:250px 1fr;max-width:1200px;margin:0 auto}
+@media(max-width:900px){.main{grid-template-columns:1fr}.sidebar{display:none}}
+.sidebar{border-right:1px solid var(--border);padding:12px 8px;max-height:calc(100vh - 56px);overflow:auto;position:sticky;top:56px}
+.side-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted2);padding:10px 8px 6px}
+.tool{width:100%;display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:12px;border:1px solid transparent;background:transparent;color:#fff;cursor:pointer;text-align:left;font-family:inherit;font-size:13px;font-weight:600;margin-bottom:3px}
+.tool:hover{background:rgba(196,30,58,.08)}.tool.active{background:rgba(196,30,58,.16);border-color:rgba(196,30,58,.4)}
+.tool .ico{width:34px;height:34px;border-radius:9px;overflow:hidden;flex-shrink:0;background:#0a0608;border:1px solid rgba(196,30,58,.25);display:flex;align-items:center;justify-content:center}
+.tool .ico img{width:100%;height:100%;object-fit:cover}.tool .meta{flex:1;min-width:0}.tool .meta small{display:block;font-size:10px;font-weight:500;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.badge{font-size:9px;font-weight:700;padding:2px 6px;border-radius:999px;background:rgba(196,30,58,.28);color:#fda4af;margin-left:4px}.badge.native{background:rgba(52,211,153,.2);color:#6ee7b7}
+.workspace{padding:20px}.panel{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:20px}
+.panel-head{display:flex;align-items:center;gap:14px;margin-bottom:14px}.panel-head .ph-ico{width:48px;height:48px;border-radius:12px;overflow:hidden;border:1px solid rgba(196,30,58,.45);box-shadow:0 0 20px var(--red-glow);background:#0a0608}.panel-head .ph-ico img{width:100%;height:100%;object-fit:cover}
+.panel-head h2{font-size:1.3rem;font-weight:800}.panel-head p{font-size:13px;color:var(--muted);margin-top:2px}
+textarea{width:100%;min-height:220px;font-family:var(--mono);font-size:12.5px;background:rgba(0,0,0,.45);border:1px solid rgba(196,30,58,.2);border-radius:12px;color:var(--text);padding:14px;resize:vertical}
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:12px}
+.btn{appearance:none;border:none;cursor:pointer;font-family:inherit;font-weight:700;font-size:13px;padding:11px 20px;border-radius:999px;background:linear-gradient(135deg,#e11d48,#9f1239);color:#fff;box-shadow:0 0 24px var(--red-glow)}
+.btn:disabled{opacity:.45}.btn.ghost{background:transparent;border:1px solid rgba(196,30,58,.4);color:#fda4af;box-shadow:none}
+.out{margin-top:14px}.out pre{font-family:var(--mono);font-size:12px;background:rgba(0,0,0,.5);border:1px solid rgba(196,30,58,.18);border-radius:12px;padding:14px;white-space:pre-wrap;max-height:400px;overflow:auto}
+.out .err{color:#f87171;font-size:13px;font-weight:600}.home{max-width:680px;margin:0 auto;text-align:center;padding-top:20px}.home h1{font-size:2.2rem;font-weight:800}.home h1 span{color:var(--red2)}.home .lead{color:var(--muted);margin:12px 0 24px}.cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;text-align:left}@media(max-width:640px){.cards{grid-template-columns:1fr}}
+.card{display:flex;gap:12px;background:rgba(24,16,28,.85);border:1px solid var(--border);border-radius:14px;padding:14px;cursor:pointer}.card:hover{border-color:rgba(196,30,58,.5)}.card .cico{width:40px;height:40px;border-radius:10px;background:#0a0608;border:1px solid rgba(196,30,58,.25);display:flex;align-items:center;justify-content:center;overflow:hidden}.card .cico img{width:100%;height:100%;object-fit:cover}
+</style>
 </head>
 <body>
-<p>Icons loading — hard refresh after deploy.</p>
-<script src="https://emorce-lua-tools.vercel.app/"></script>
+<div class="splash" id="splash"><div class="ring">D</div><h1>DEMORCE <span>Tools</span></h1><p>click anywhere to enter</p></div>
+<div id="shell" style="display:none">
+<header class="topbar"><a class="brand" href="#"><span class="mark">D</span>DEMORCE <em>Tools</em></a>
+<nav class="nav-pills"><button type="button" data-page="home" class="on">Home</button><button type="button" data-page="tool">Engines</button><button type="button" data-page="api">API</button></nav></header>
+<div class="main"><aside class="sidebar" id="sidebar"><div class="side-label">Native</div><div id="side-native"></div><div class="side-label">Deobfuscators</div><div id="side-deobf"></div><div class="side-label">Utilities</div><div id="side-util"></div></aside>
+<section class="workspace" id="workspace"></section></div></div>
+<script>
+const TOOLS=[
+{id:'hexed',name:'HEXED v4',img:'',letter:'H',endpoint:'/api/hexed',local:true,group:'native',label:'OBFUSCATE',desc:'Emorce multi-key obfuscator.',badge:'NATIVE',badgeClass:'native'},
+{id:'detector',name:'Detector',letter:'D',endpoint:'/detect',group:'deobf',label:'DETECT',desc:'Identify obfuscator.'},
+{id:'luraph',name:'Luraph',letter:'L',endpoint:'/luraph',group:'deobf',label:'DEOBFUSCATE',desc:'Luraph v14–15.1',badge:'v14–15.1'},
+{id:'prometheus',name:'Prometheus',letter:'P',endpoint:'/prometheus',group:'deobf',label:'DEOBFUSCATE',desc:'Prometheus / WeAreDevs'},
+{id:'moonsec',name:'MoonSec',letter:'M',endpoint:'/moonsec',group:'deobf',label:'DEOBFUSCATE',desc:'MoonSec V2/V3'},
+{id:'ironveil',name:'Ironveil',letter:'I',endpoint:'/ironveil',group:'deobf',label:'DEOBFUSCATE',desc:'Ironveil V1'},
+{id:'psu',name:'PSU',letter:'P',endpoint:'/psu',group:'deobf',label:'DEOBFUSCATE',desc:'PSU 4.x'},
+{id:'ironbrew2',name:'IronBrew2',letter:'I',endpoint:'/ironbrew2',group:'deobf',label:'DEOBFUSCATE',desc:'IronBrew2'},
+{id:'moonveil',name:'Moonveil',letter:'M',endpoint:'/moonveil',group:'deobf',label:'DEOBFUSCATE',desc:'Moonveil'},
+{id:'xhider',name:'XHider',letter:'X',endpoint:'/xhider',group:'deobf',label:'DEOBFUSCATE',desc:'XHider'},
+{id:'hercules',name:'Hercules',letter:'H',endpoint:'/hercules',group:'deobf',label:'DEOBFUSCATE',desc:'Hercules'},
+{id:'goofyscator',name:'Goofyscator',letter:'G',endpoint:'/goofyscator',group:'deobf',label:'DEOBFUSCATE',desc:'Goofyscator V10',badge:'BETA'},
+{id:'clyde',name:'Clyde',letter:'C',endpoint:'/clydedeobf',group:'deobf',label:'DEOBFUSCATE',desc:'Clyde Protection'},
+{id:'77fuscator',name:'77fuscator',letter:'7',endpoint:'/77fuscator',group:'deobf',label:'DEOBFUSCATE',desc:'77fuscator'},
+{id:'luaobfuscator',name:'LuaObfuscator',letter:'L',endpoint:'/luaobfuscator',group:'deobf',label:'DEOBFUSCATE',desc:'LuaObfuscator.com'},
+{id:'obfuscator',name:'Obfuscator',letter:'O',endpoint:'/obfuscate',group:'util',label:'OBFUSCATE',desc:'Plain Lua obfuscator'},
+{id:'beautifier',name:'Beautifier',letter:'B',endpoint:'/beautify',group:'util',label:'BEAUTIFY',desc:'Beautify any Lua'},
+{id:'renamer',name:'Renamer',letter:'R',endpoint:'/rename',group:'util',label:'RENAME',desc:'Rename identifiers'}
+];
+let activeId='hexed',scriptBuf='',page='home';
+const splash=document.getElementById('splash'),shell=document.getElementById('shell'),workspace=document.getElementById('workspace'),sidebar=document.getElementById('sidebar');
+function enter(){sessionStorage.setItem('demorce_in','1');splash.classList.add('out');shell.style.display='block';route()}
+splash.onclick=enter;if(sessionStorage.getItem('demorce_in'))enter();
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function avatar(t){const colors=['#c41e3a','#9f1239','#e11d48','#be123c','#881337','#fb7185'];const c=(t.letter||t.name||'?').charAt(0).toUpperCase();const col=colors[c.charCodeAt(0)%colors.length];return `<span style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;background:${col};color:#fff;font-weight:800;font-size:14px">${c}</span>`}
+function toolBtn(t){const badge=t.badge?`<span class="badge ${t.badgeClass||''}">${esc(t.badge)}</span>`:'';return `<button type="button" class="tool ${t.id===activeId?'active':''}" data-id="${t.id}"><span class="ico">${avatar(t)}</span><span class="meta"><span>${esc(t.name)}${badge}</span><small>${esc(t.desc)}</small></span></button>`}
+function renderSidebar(){document.getElementById('side-native').innerHTML=TOOLS.filter(t=>t.group==='native').map(toolBtn).join('');document.getElementById('side-deobf').innerHTML=TOOLS.filter(t=>t.group==='deobf').map(toolBtn).join('');document.getElementById('side-util').innerHTML=TOOLS.filter(t=>t.group==='util').map(toolBtn).join('');sidebar.querySelectorAll('.tool').forEach(b=>{b.onclick=()=>{activeId=b.dataset.id;page='tool';document.querySelectorAll('.nav-pills button').forEach(x=>x.classList.toggle('on',x.dataset.page==='tool'));route()}})}
+function route(){renderSidebar();if(page==='tool')renderTool();else if(page==='api')renderApi();else renderHome()}
+document.querySelectorAll('.nav-pills button').forEach(btn=>{btn.onclick=()=>{page=btn.dataset.page;document.querySelectorAll('.nav-pills button').forEach(x=>x.classList.toggle('on',x===btn));route()}});
+function renderHome(){workspace.innerHTML=`<div class="home"><div class="ring" style="width:72px;height:72px;border-radius:18px;margin:0 auto 16px;background:linear-gradient(135deg,#e11d48,#9f1239);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:24px;box-shadow:0 0 32px var(--red-glow)">D</div><h1>DEMORCE <span>Tools</span></h1><p class="lead">HEXED v4 + Luraph 14–15.1, Ironveil, Prometheus, MoonSec — keyed engines.</p><div class="cards"><div class="card" data-go="hexed"><div class="cico">${avatar(TOOLS[0])}</div><div><strong>HEXED v4</strong><span style="color:var(--muted);font-size:12px">Native obfuscator</span></div></div><div class="card" data-go="luraph"><div class="cico">${avatar(TOOLS[2])}</div><div><strong>Luraph 14–15.1</strong><span style="color:var(--muted);font-size:12px">Full family</span></div></div><div class="card" data-go="ironveil"><div class="cico">${avatar(TOOLS[5])}</div><div><strong>Ironveil</strong><span style="color:var(--muted);font-size:12px">V1 recovery</span></div></div><div class="card" data-go="detector"><div class="cico">${avatar(TOOLS[1])}</div><div><strong>Detector</strong><span style="color:var(--muted);font-size:12px">Find the engine</span></div></div></div></div>`;workspace.querySelectorAll('.card').forEach(c=>{c.onclick=()=>{activeId=c.dataset.go;page='tool';document.querySelectorAll('.nav-pills button').forEach(x=>x.classList.toggle('on',x.dataset.page==='tool'));route()}})}
+function renderTool(){const t=TOOLS.find(x=>x.id===activeId)||TOOLS[0];const badge=t.badge?`<span class="badge ${t.badgeClass||''}">${esc(t.badge)}</span>`:'';workspace.innerHTML=`<div class="panel"><div class="panel-head"><div class="ph-ico">${avatar(t)}</div><div><h2>${esc(t.name)} ${badge}</h2><p>${esc(t.desc)}</p></div></div><textarea id="script" placeholder="Paste Lua / Luau…">${esc(scriptBuf)}</textarea><div class="toolbar"><label style="font-size:12px;color:var(--muted);display:flex;gap:6px;align-items:center"><input type="checkbox" id="pastefy"/> Pastefy</label><button class="btn" id="run">${esc(t.label)}</button><button class="btn ghost" id="clear">Clear</button></div><div class="out" id="out"></div></div>`;document.getElementById('clear').onclick=()=>{scriptBuf='';document.getElementById('script').value='';document.getElementById('out').innerHTML=''};document.getElementById('run').onclick=()=>runTool(t)}
+async function runTool(t){const ta=document.getElementById('script');scriptBuf=ta?ta.value:'';const out=document.getElementById('out');const btn=document.getElementById('run');const wantPaste=document.getElementById('pastefy')?.checked;if(!scriptBuf.trim()){out.innerHTML='<p class="err">Paste a script first.</p>';return}btn.disabled=true;btn.textContent='Working…';out.innerHTML='<p style="color:var(--muted);font-size:12px">Running…</p>';try{const fd=new FormData();fd.append('script',scriptBuf);fd.append('file',new Blob([scriptBuf],{type:'text/plain'}),'script.lua');if(wantPaste)fd.append('pastefy','true');const url=t.local?'/api/hexed':'/api/proxy?path='+encodeURIComponent(t.endpoint);const res=await fetch(url,{method:'POST',body:fd,headers:wantPaste?{'X-Pastefy':'1'}:{}});const text=await res.text();let data;try{data=JSON.parse(text)}catch{data={raw:text}}let result='',isErr=false;if(typeof data.code==='string')result=data.code;else if(typeof data.result==='string')result=data.result;else if(typeof data.output==='string')result=data.output;else if(data.error){isErr=true;result=String(data.error)}else if(data.top_result||data.detections)result=JSON.stringify(data,null,2);else if(data.raw)result=data.raw;else result=JSON.stringify(data,null,2);out.innerHTML=(isErr?'<p class="err">Engine rejected this input</p>':'')+'<pre>'+esc(result)+'</pre>'}catch(e){out.innerHTML='<p class="err">'+esc(e.message)+'</p>'}btn.disabled=false;btn.textContent=t.label}
+function renderApi(){workspace.innerHTML='<div class="panel"><h2 style="margin-bottom:12px">API</h2>'+TOOLS.map(t=>`<div style="margin-bottom:8px;font-size:13px"><code style="color:#fda4af">POST ${t.local?'/api/hexed':'/api/proxy?path='+t.endpoint}</code> — ${esc(t.name)}</div>`).join('')+'</div>'}
+</script>
 </body>
 </html>
